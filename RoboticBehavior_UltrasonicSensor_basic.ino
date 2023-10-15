@@ -1,30 +1,32 @@
-// define variables
-int USecho = 8; // attach pin D8 of arduino to echo of ultrasonic sensor (HC-SR04)
-int UStrig = 7; // attach pin D7 of arduino to trig of ultrasonic sensor 
+// define echo and trig for ultrasonic senso
+int USecho = 8; 
+int UStrig = 7; 
 
-long duration; // duration of sound wave travel
-int distance; // distance measurement
+// define duration and distance variables
+long duration; 
+int distance; 
 
 void setup() {
-  pinMode (UStrig, OUTPUT) ; // sonar digital pin mode for trig
-  pinMode (USecho, INPUT); // sonar digital pin mode for echo
-
-  Serial.begin (9600) ; // begin 9600 baud rate for serial communication
+  // set sonar digital pin mode
+  pinMode (UStrig, OUTPUT) ; 
+  pinMode (USecho, INPUT); 
+  
+  // start debug communication
+  Serial.begin (9600); 
 }
 
-
 void loop() {
-  digitalWrite (UStrig, LOW); // starts trig pin low
-  delayMicroseconds (2); // delay for 2 ms
-  digitalWrite (UStrig, HIGH); // makes trig pin high
-  delayMicroseconds (10) ; // continue high UStrig for 10 ms
-  digitalWrite (UStrig, LOW); // after 10 ms set UStrig to low
-  delayMicroseconds (2); // delay for 2 ms
-  
-  duration = pulseIn (USecho, HIGH); // recieves pulse and duration info from echo
-  distance = duration * 0.034 / 2; // converts statistics of duration to distance to the obejct
-  }
+  // receive distance measurement + delays
+  digitalWrite (UStrig, LOW); 
+  delayMicroseconds (2); 
+  digitalWrite (UStrig, HIGH); 
+  delayMicroseconds (10); 
+  digitalWrite (UStrig, LOW);
+  delayMicroseconds (2); 
 
-  delay(10); //delay for 10 ms
-  
+  //receives pulse and duration info to convert to distance
+  duration = pulseIn (USecho, HIGH);
+  distance = duration * 0.034 / 2; 
+  }
+  delay(10);   
 }
