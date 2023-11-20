@@ -23,8 +23,8 @@ int ePin = 8;
 int tPin = 7; 
 
 // define motor control pins
-int rMotor = 4; 
-int lMotor = 5; 
+#define IN1 4 // connect IN1 on the H-Bridge to Arduino pin 4
+#define IN2 9 // connect IN2 on the H-Bridge to Arduino pin 5
 // SWITCH AS NECESSARY
 
 // define variables to update LCD tracks
@@ -46,8 +46,8 @@ void setup() {
   pinMode (ePin, INPUT); 
   
   // initialize motors
-  pinMode (rMotor, OUTPUT); // all L298N digital pins are outputs
-  pinMode (lMotor, OUTPUT); // all L298N digital pins are outputs
+  pinMode (IN1, OUTPUT); // all L298N digital pins are outputs
+  pinMode (IN2, OUTPUT); // all L298N digital pins are outputs
 
   // start debug communication
   Serial.begin (9600);
@@ -88,8 +88,8 @@ void loop() {
   if (distance <= 25) {
     LCDcurr = 1;
 
-    digitalWrite(rMotor, LOW);
-    digitalWrite(lMotor, HIGH);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
 
     if (LCDprev != LCDcurr) {
       lcd.setCursor(0, 1);
@@ -101,11 +101,11 @@ void loop() {
     LCDcurr = 2;
 
     // Turn left 90 degrees
-    digitalWrite(rMotor, LOW);
-    digitalWrite(lMotor, LOW);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
     delay(500);  // Adjust the delay based on the time it takes for the robot to turn 90 degrees
-    digitalWrite(rMotor, LOW);
-    digitalWrite(lMotor, LOW);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
 
     if (LCDprev != LCDcurr) {
       lcd.setCursor(0, 1);
@@ -116,8 +116,8 @@ void loop() {
   } else if (distance <= 75) {
     LCDcurr = 3;
 
-    digitalWrite(rMotor, HIGH);
-    digitalWrite(lMotor, LOW);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, HIGH);
 
     if (LCDprev != LCDcurr) {
       lcd.setCursor(0, 1);
@@ -128,8 +128,8 @@ void loop() {
   } else {
     LCDcurr = 4;
 
-    digitalWrite(rMotor, LOW);
-    digitalWrite(lMotor, LOW);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
 
     if (LCDprev != LCDcurr) {
       lcd.setCursor(0, 1);
