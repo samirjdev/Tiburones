@@ -1,0 +1,137 @@
+// ---------------------------------------------------------------- // 
+// Tiburones - Motorized Arduino Bot 
+// Final Draft
+// Created by - Team 17
+// Using Arduino IDE 2.2.1
+// Prototype (Test Code) v2
+// ---------------------------------------------------------------- // 
+
+// for LCD display
+#include <LiquidCrystal_I2C.h> 
+
+// initalization for display
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// define variables for lcd display
+char array1[] = "TANK STATE      ";
+char array2[] = "LEFT TURN       ";
+char array3[] = "SAFETY STOP     ";
+char array4[] = "GOING           ";
+char array5[] = "OUT OF RANGE    ";
+
+// define echo and trig for ultrasonic sensor
+int ePin = 8; 
+int tPin = 7; 
+
+// define motor control pins
+#define IN1 4 // connect IN1 on the H-Bridge to Arduino pin 4
+#define IN2 9 // connect IN2 on the H-Bridge to Arduino pin 5
+// SWITCH AS NECESSARY
+// EX: SWAP 4 & 9 IF INCORRECT MOTOR COMPATIBILITY
+
+// define variables to update LCD tracks
+int LCDprev = 99; 
+int LCDcurr = 100; 
+
+// define duration and distance variables
+long duration;
+int distance; 
+
+void setup() {
+
+  // initialize LCD and backlight
+  lcd.init(); 
+  lcd.backlight(); 
+
+  // set sonar digital pin mode
+  pinMode (tPin, OUTPUT); 
+  pinMode (ePin, INPUT); 
+  
+  // initialize motors
+  pinMode (IN1, OUTPUT); // all L298N digital pins are outputs
+  pinMode (IN2, OUTPUT); // all L298N digital pins are outputs
+
+  // start debug communication
+  Serial.begin (9600);
+
+  // set initial cursor and print "Robot State:"
+  lcd.setCursor(0, 0);
+  lcd.print (array1);
+  
+}
+
+
+void loop() {
+
+  LCDprev = LCDcurr;
+
+  // receive distance measurement + delays, clears trig condition
+  digitalWrite (tPin, LOW);
+  delayMicroseconds (2); 
+  digitalWrite (tPin, HIGH); 
+  delayMicroseconds (10) ; 
+  digitalWrite (tPin, LOW);
+
+  //receives pulse and duration info to convert to distance
+  duration = pulseIn (ePin, HIGH); 
+  distance = duration * 0.034 / 2; 
+
+  // displays the distance
+  Serial.print ("Distance: ");
+  Serial.print (distance);
+  Serial.println(" cm");
+  
+  if (distance <= 10) {
+    LCDcurr = 1;
+
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+
+    if (LCDprev != LCDcurr) {
+      lcd.setCursor(0, 1);
+      lcd.print(array3);
+      delay(10);
+    }
+    
+} else if (distance <= 25) {
+    LCDcurr = 2;
+
+    // Turn left 90 degrees
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    delay(740);  // Adjust the delay based on the time it takes for the robot to turn 90 degrees
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+
+    if (LCDprev != LCDcurr) {
+        lcd.setCursor(0, 1);
+        lcd.print(array2);
+        delay(10);
+    }
+
+  } else if (distance <= 500) {
+    LCDcurr = 3;
+
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, HIGH);
+
+    if (LCDprev != LCDcurr) {
+      lcd.setCursor(0, 1);
+      lcd.print(array4);
+      delay(10);
+    }
+
+  } else {
+    LCDcurr = 4;
+
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+
+    if (LCDprev != LCDcurr) {
+      lcd.setCursor(0, 1);
+      lcd.print(array5);
+      delay(10);
+    }
+  }
+  delay(10);
+}
